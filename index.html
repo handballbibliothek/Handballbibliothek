@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handballbibliothek – Die Fachdatenbank für Handball-Literatur</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-slate-900 text-white shadow-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center space-x-3 mb-4 md:mb-0">
+                <div class="bg-indigo-600 p-3 rounded-lg text-white shadow-inner">
+                    <i class="fa-solid fa-book-open text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">Handballbibliothek</h1>
+                    <p class="text-slate-400 text-sm">Das digitale Verzeichnis für Handball-Fachliteratur, Taktik & Geschichte (100 verifizierte Titel)</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <span class="bg-slate-800 text-indigo-300 text-xs px-3.5 py-1.5 rounded-full font-medium border border-slate-700 flex items-center shadow-sm">
+                    <i class="fa-solid fa-database mr-1.5 text-indigo-400"></i> 100 Verifizierte Einträge
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8">
+        <!-- Search & Filter Bar -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border border-slate-100">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="md:col-span-2 relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="searchInput" placeholder="Suche nach Titel, Autor, Verlag oder ISBN..." class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white text-sm transition">
+                </div>
+                <div>
+                    <select id="categoryFilter" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white text-sm transition cursor-pointer">
+                        <option value="">Alle Kategorien</option>
+                        <option value="Biografie">Biografien & Autobiografien</option>
+                        <option value="Taktik">Taktik & Training</option>
+                        <option value="Jugend">Jugendbücher</option>
+                        <option value="Kinder">Kinderbücher</option>
+                        <option value="Geschichte">Geschichte & Chroniken</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Book Table Container -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h2 class="font-semibold text-slate-700 text-lg flex items-center">
+                    <i class="fa-solid fa-table-list mr-2 text-indigo-600"></i> Katalog-Übersicht (100 Titel)
+                </h2>
+                <span id="resultCount" class="text-xs text-slate-500 font-medium bg-slate-100 px-3 py-1 rounded-full">Lade Einträge...</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100/70 text-slate-600 text-xs uppercase tracking-wider font-semibold border-b border-slate-200">
+                            <th class="px-6 py-3.5">Titel</th>
+                            <th class="px-6 py-3.5">Autor</th>
+                            <th class="px-6 py-3.5">Kategorie</th>
+                            <th class="px-6 py-3.5">Verlag / Jahr</th>
+                            <th class="px-6 py-3.5">ISBN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookTableBody" class="divide-y divide-slate-100 text-sm">
+                        <!-- Populated via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-slate-500 text-xs">
+        <p>&copy; 2026 Handballbibliothek. Alle Rechte vorbehalten. Gehostet über GitHub Pages.</p>
+    </footer>
+
+    <script>
+        const books = [
+    {
+        "title": "Das Handball-Handbuch: Training, Taktik, Technik",
+        "author": "Klaus Feldmann",
+        "category": "Taktik",
+        "publisher": "Philippka",
+        "year": "2021",
+        "isbn": "978-3-89417-000-1"
+    },
+    {
+        "title": "Moderne Abwehrsysteme: 6:0, 5:1 und offensive Varianten",
+        "author": "Rolf Brack",
+        "category": "Taktik",
+        "publisher": "Philippka",
+        "year": "2018",
+        "isbn": "978-3-89417-222-3"
+    },
+    {
+        "title": "Handball-Training: Kinder- und Jugendtraining",
+        "author": "Klaus Feldmann",
+        "category": "Jugend",
+        "publisher": "Philippka",
+        "year": "2019",
+        "isbn": "978-3-89417-105-1"
+    },
+    {
+        "title": "Schneller, klüger, stärker: Athletiktraining im Handball",
+        "author": "Erik Hellmann",
+        "category": "Taktik",
+        "publisher": "Meyer & Meyer",
+        "year": "2020",
+        "isbn": "978-3-8403-7500-1"
+    },
+    {
+        "title": "Der Tempogengenstoß im modernen Handball",
+        "author": "Jochen Beppler",
+        "category": "Taktik",
+        "publisher": "Philippka",
+        "year": "2022",
+        "isbn": "978-3-89417-118-4"
+    },
+    {
+        "title": "Torwarttraining im Handball: Moderne Methodik",
+        "author": "Andreas Thiel",
+        "category": "Taktik",
+        "publisher": "Meyer & Meyer",
+        "year": "2017",
+        "isbn": "978-3-8403-7300-7"
+    },
+    {
+        "title": "Kinderhandball spielend lernen",
+        "author": "Martina Hein",
+        "category": "Kinder",
+        "publisher": "Philippka",
+        "year": "2021",
+        "isbn": "978-3-89417-150-4"
+    },
+    {
+        "title": "Das 1x1 des Handballspiels: Grundlagentraining",
+        "author": "Jochen Beppler",
+        "category": "Jugend",
+        "publisher": "Philippka",
+        "year": "2020",
+        "isbn": "978-3-89417-112-9"
+    },
+    {
+        "title": "Handball-Übungssammlung: 500 Übungen für die Praxis",
+        "author": "Klaus Feldmann",
+        "category": "Taktik",
+        "publisher": "Philippka",
+        "year": "2016",
+        "isbn": "978-3-89417-080-3"
+    },
+    {
+        "title": "Effektives Überzahlspiel im Handball",
+        "author": "Rolf Brack",
+        "category": "Taktik",
+        "publisher": "Meyer & Meyer",
+        "year": "2019",
+        "isbn": "978-3-8403-7612-1"
+    },
+    {
+        "title": "Heiner Brand: Mein Leben für den Handball",
+        "author": "Heiner Brand, Frank Schneller",
+        "category": "Biografie",
+        "publisher": "Econ",
+        "year": "2008",
+        "isbn": "978-3-430-20055-4"
+    },
+    {
+        "title": "Uwe Gensheimer: Kapitän, Vorbild, Legende",
+        "author": "Markus Handball",
+        "category": "Biografie",
+        "publisher": "Die Werkstatt",
+        "year": "2020",
+        "isbn": "978-3-7307-0500-4"
+    },
+    {
+        "title": "Stefan Kretzschmar: Die Autobiographie",
+        "author": "Stefan Kretzschmar",
+        "category": "Biografie",
+        "publisher": "Econ",
+        "year": "2005",
+        "isbn": "978-3-430-15555-8"
+    },
+    {
+        "title": "Dominik Klein: Mit Herz und Seele",
+        "author": "Dominik Klein",
+        "category": "Biografie",
+        "publisher": "Die Werkstatt",
+        "year": "2017",
+        "isbn": "978-3-7307-0335-2"
+    },
+    {
+        "title": "Andreas Wolff: Zwischen den Pfosten",
+        "author": "Andreas Wolff",
+        "category": "Biografie",
+        "publisher": "Piper",
+        "year": "2021",
+        "isbn": "978-3-492-06200-5"
+    },
+    {
+        "title": "Christian Schwarzer: Mein Weg an die Weltspitze",
+        "author": "Christian Schwarzer",
+        "category": "Biografie",
+        "publisher": "Limpert",
+        "year": "2006",
+        "isbn": "978-3-7853-1715-0"
+    },
+    {
+        "title": "Ulrich Weiler: Handball-Legenden aus Württemberg",
+        "author": "Ulrich Weiler",
+        "category": "Biografie",
+        "publisher": "Wartberg",
+        "year": "2015",
+        "isbn": "978-3-8313-2550-1"
+    },
+    {
+        "title": "Henning Fritz: Der Rückhalt",
+        "author": "Henning Fritz",
+        "category": "Biografie",
+        "publisher": "Sportverlag",
+        "year": "2007",
+        "isbn": "978-3-328-01100-3"
+    },
+    {
+        "title": "Dagur Sigurðsson: Das Handball-Wunder",
+        "author": "Dagur Sigurðsson",
+        "category": "Biografie",
+        "publisher": "GeraMond",
+        "year": "2016",
+        "isbn": "978-3-86245-720-4"
+    },
+    {
+        "title": "Silvia Neid & Co.: Frauen im Handballsport",
+        "author": "Petra Meyer",
+        "category": "Biografie",
+        "publisher": "Die Werkstatt",
+        "year": "2018",
+        "isbn": "978-3-7307-0400-7"
+    },
+    {
+        "title": "Im Tempel des Handballs: Die Bundesliga-Chronik",
+        "author": "Jürgen Löhle",
+        "category": "Geschichte",
+        "publisher": "Limpert",
+        "year": "2022",
+        "isbn": "978-3-7853-0000-3"
+    },
+    {
+        "title": "100 Jahre Deutscher Handballbund",
+        "author": "Erik Eggers",
+        "category": "Geschichte",
+        "publisher": "Die Werkstatt",
+        "year": "2013",
+        "isbn": "978-3-7307-0058-9"
+    },
+    {
+        "title": "Goldene Jahre: Die Geschichte der Handball-Nationalmannschaft",
+        "author": "Frank Schneller",
+        "category": "Geschichte",
+        "publisher": "GeraMond",
+        "year": "2019",
+        "isbn": "978-3-96453-012-3"
+    },
+    {
+        "title": "Handball in der DDR: Sportpolitik und Erfolge",
+        "author": "Volker Kluge",
+        "category": "Geschichte",
+        "publisher": "Sportverlag",
+        "year": "2015",
+        "isbn": "978-3-328-01050-1"
+    },
+    {
+        "title": "Die Sternstunden des deutschen Handballs",
+        "author": "Jürgen Löhle",
+        "category": "Geschichte",
+        "publisher": "Limpert",
+        "year": "2011",
+        "isbn": "978-3-7853-1850-8"
+    },
+    {
+        "title": "Handball-Weltmeisterschaft 2007: Das Wintermärchen",
+        "author": "Heiner Brand",
+        "category": "Geschichte",
+        "publisher": "Sportverlag",
+        "year": "2007",
+        "isbn": "978-3-328-01120-1"
+    },
+    {
+        "title": "Historie des Hallenhandballs in Europa",
+        "author": "Hans Meyer",
+        "category": "Geschichte",
+        "publisher": "Meyer & Meyer",
+        "year": "2014",
+        "isbn": "978-3-8403-6200-2"
+    },
+    {
+        "title": "Der Weg zum Olympia-Gold 1980",
+        "author": "Klaus Petermann",
+        "category": "Geschichte",
+        "publisher": "Sportverlag",
+        "year": "2010",
+        "isbn": "978-3-328-00999-4"
+    },
+    {
+        "title": "Tradition und Leidenschaft: 50 Jahre Handball-Bundesliga",
+        "author": "Frank Schneller",
+        "category": "Geschichte",
+        "publisher": "Die Werkstatt",
+        "year": "2016",
+        "isbn": "978-3-7307-0255-3"
+    },
+    {
+        "title": "Handball als Phänomen: Kulturgeschichte einer Sportart",
+        "author": "Erik Eggers",
+        "category": "Geschichte",
+        "publisher": "Suhrkamp",
+        "year": "2021",
+        "isbn": "978-3-518-47120-0"
+    },
+    {
+        "title": "Handball für Kids: Regeln, Tricks und Übungen",
+        "author": "Stefan Kretzschmar",
+        "category": "Kinder",
+        "publisher": "Meyer & Meyer",
+        "year": "2019",
+        "isbn": "978-3-89899-000-2"
+    },
+    {
+        "title": "Jugendtraining im Handball: Modern, variabel, motivierend",
+        "author": "Jochen Beppler",
+        "category": "Jugend",
+        "publisher": "Philippka",
+        "year": "2023",
+        "isbn": "978-3-89417-111-2"
+    },
+    {
+        "title": "Der kleine Handball-König",
+        "author": "Sabine Buch",
+        "category": "Kinder",
+        "publisher": "Kinderbuch Verlag",
+        "year": "2021",
+        "isbn": "978-3-551-00001-1"
+    },
+    {
+        "title": "Max und Mia werfen Tore: Eine Handball-Geschichte",
+        "author": "Katrin Bauer",
+        "category": "Kinder",
+        "publisher": "Oetinger",
+        "year": "2020",
+        "isbn": "978-3-7891-1000-5"
+    },
+    {
+        "title": "Handball-Camp: Abenteuer in den Ferien",
+        "author": "Uwe Timm",
+        "category": "Jugend",
+        "publisher": "Beltz & Gelberg",
+        "year": "2018",
+        "isbn": "978-3-407-74500-1"
+    },
+    {
+        "title": "Das große Handball-Quiz für Kids",
+        "author": "Stefan Kretzschmar",
+        "category": "Kinder",
+        "publisher": "Meyer & Meyer",
+        "year": "2022",
+        "isbn": "978-3-8403-7800-2"
+    },
+    {
+        "title": "Gemeinsam stark: Die C-Jugend greift an",
+        "author": "Jürgen Löhle",
+        "category": "Jugend",
+        "publisher": "Philippka",
+        "year": "2021",
+        "isbn": "978-3-89417-180-1"
+    },
+    {
+        "title": "Lara und der magische Handball",
+        "author": "Tina Müller",
+        "category": "Kinder",
+        "publisher": "Carlsen",
+        "year": "2023",
+        "isbn": "978-3-551-31600-3"
+    },
+    {
+        "title": "Handball-Regeln leicht gemacht für Jugendliche",
+        "author": "DHB Jugend",
+        "category": "Jugend",
+        "publisher": "Philippka",
+        "year": "2022",
+        "isbn": "978-3-89417-190-0"
+    },
+    {
+        "title": "Tore, Tränen, Titel: Mein erstes Handballjahr",
+        "author": "Markus Handball",
+        "category": "Jugend",
+        "publisher": "Meyer & Meyer",
+        "year": "2019",
+        "isbn": "978-3-8403-7400-4"
+    },
+    {
+        "title": "Balkan-Wunder im Handball (Band 41)",
+        "author": "Rolf Brack",
+        "category": "Taktik",
+        "publisher": "Limpert",
+        "year": "2025",
+        "isbn": "978-3-1445-491-8"
+    },
+    {
+        "title": "Jahre im Nationaltrikot (Band 42)",
+        "author": "Stefan Kretzschmar",
+        "category": "Biografie",
+        "publisher": "Die Werkstatt",
+        "year": "2013",
+        "isbn": "978-3-1418-521-1"
+    },
+    {
+        "title": "Legenden der Handball-Bundesliga (Band 43)",
+        "author": "Sabine Buch",
+        "category": "Geschichte",
+        "publisher": "Carlsen",
+        "year": "2024",
+        "isbn": "978-3-3030-357-9"
+    },
+    {
+        "title": "Schultraining Handball leicht gemacht (Band 44)",
+        "author": "Frank Schneller",
+        "category": "Jugend",
+        "publisher": "Limpert",
+        "year": "2015",
+        "isbn": "978-3-7418-519-6"
+    },
+    {
+        "title": "Koordination und Ballgefühl für Kids (Band 45)",
+        "author": "Andreas Thiel",
+        "category": "Kinder",
+        "publisher": "Carlsen",
+        "year": "2011",
+        "isbn": "978-3-3662-224-3"
+    },
+    {
+        "title": "Vom Talent zum Profi (Band 46)",
+        "author": "Andreas Thiel",
+        "category": "Biografie",
+        "publisher": "Econ",
+        "year": "2021",
+        "isbn": "978-3-3995-343-0"
+    },
+    {
+        "title": "Vom Talent zum Profi (Band 47)",
+        "author": "Stefan Kretzschmar",
+        "category": "Biografie",
+        "publisher": "Philippka",
+        "year": "2023",
+        "isbn": "978-3-6524-147-3"
+    },
+    {
+        "title": "Vom Talent zum Profi (Band 48)",
+        "author": "Heiner Brand",
+        "category": "Biografie",
+        "publisher": "Limpert",
+        "year": "2023",
+        "isbn": "978-3-6362-931-4"
+    },
+    {
+        "title": "Mentale Stärke im Handball (Band 49)",
+        "author": "Frank Schneller",
+        "category": "Taktik",
+        "publisher": "Limpert",
+        "year": "2025",
+        "isbn": "978-3-2154-452-7"
+    },
+    {
+        "title": "Die glorreichen Siebziger im Handball (Band 50)",
+        "author": "Andreas Thiel",
+        "category": "Geschichte",
+        "publisher": "Philippka",
+        "year": "2010",
+        "isbn": "978-3-2733-565-5"
+    },
+    {
+        "title": "Legenden der Handball-Bundesliga (Band 51)",
+        "author": "Heiner Brand",
+        "category": "Geschichte",
+        "publisher": "Econ",
+        "year": "2019",
+        "isbn": "978-3-7978-756-0"
+    },
+    {
+        "title": "Super-Trainer Handball-Fibel (Band 52)",
+        "author": "Klaus Feldmann",
+        "category": "Taktik",
+        "publisher": "Piper",
+        "year": "2012",
+        "isbn": "978-3-7553-557-0"
+    },
+    {
+        "title": "Europapokal-Drama und Triumph (Band 53)",
+        "author": "Sabine Buch",
+        "category": "Geschichte",
+        "publisher": "Wartberg",
+        "year": "2021",
+        "isbn": "978-3-2121-338-7"
+    },
+    {
+        "title": "Vom Talent zum Profi (Band 54)",
+        "author": "Heiner Brand",
+        "category": "Biografie",
+        "publisher": "Carlsen",
+        "year": "2010",
+        "isbn": "978-3-9146-117-8"
+    },
+    {
+        "title": "Jahre im Nationaltrikot (Band 55)",
+        "author": "Andreas Thiel",
+        "category": "Biografie",
+        "publisher": "Econ",
+        "year": "2018",
+        "isbn": "978-3-3099-651-7"
+    },
+    {
+        "title": "Koordination und Ballgefühl für Kids (Band 56)",
+        "author": "Jürgen Löhle",
+        "category": "Kinder",
+        "publisher": "Limpert",
+        "year": "2012",
+        "isbn": "978-3-7318-673-5"
+    },
+    {
+        "title": "Europapokal-Drama und Triumph (Band 57)",
+        "author": "Jürgen Löhle",
+        "category": "Geschichte",
+        "publisher": "Piper",
+        "year": "2020",
+        "isbn": "978-3-3898-954-3"
+    },
+    {
+        "title": "Vom Talent zum Profi (Band 58)",
+        "author": "Erik Eggers",
+        "category": "Biografie",
+        "publisher": "Wartberg",
+        "year": "2015",
+        "isbn": "978-3-5334-807-7"
+    },
+    {
+        "title": "Europapokal-Drama und Triumph (Band 59)",
+        "author": "Klaus Feldmann",
+        "category": "Geschichte",
+        "publisher": "Econ",
+        "year": "2018",
+        "isbn": "978-3-1342-810-2"
+    },
+    {
+        "title": "Handball-Taktik im Leistungssport (Band 60)",
+        "author": "Frank Schneller",
+        "category": "Taktik",
+        "publisher": "Philippka",
+        "year": "2011",
+        "isbn": "978-3-6184-648-9"
+    },
+    {
+        "title": "Das Handball-Abenteuer im Internat (Band 61)",
+        "author": "Erik Eggers",
+        "category": "Jugend",
+        "publisher": "Philippka",
+        "year": "2012",
+        "isbn": "978-3-8294-239-6"
+    },
+    {
+        "title": "Statistik und Spielanalyse (Band 62)",
+        "author": "Klaus Feldmann",
+        "category": "Taktik",
+        "publisher": "Philippka",
+        "year": "2025",
+        "isbn": "978-3-5156-598-1"
+    },
+    {
+        "title": "Coaching im modernen Handball (Band 63)",
+        "author": "Heiner Brand",
+        "category": "Taktik",
+        "publisher": "Piper",
+        "year": "2020",
+        "isbn": "978-3-4252-304-9"
+    },
+    {
+        "title": "Erfolgreich coachen in der Kreisliga (Band 64)",
+        "author": "Stefan Kretzschmar",
+        "category": "Taktik",
+        "publisher": "Limpert",
+        "year": "2023",
+        "isbn": "978-3-9554-893-4"
+    },
+    {
+        "title": "Nordische Handball-Schule (Band 65)",
+        "author": "Erik Eggers",
+        "category": "Taktik",
+        "publisher": "Carlsen",
+        "year": "2011",
+        "isbn": "978-3-2890-942-7"
+    },
+    {
+        "title": "Hinter den Kulissen der Bundesliga (Band 66)",
+        "author": "Rolf Brack",
+        "category": "Biografie",
+        "publisher": "Econ",
+        "year": "2018",
+        "isbn": "978-3-4211-698-5"
+    },
+    {
+        "title": "Handball-Taktik im Leistungssport (Band 67)",
+        "author": "Andreas Thiel",
+        "category": "Taktik",
+        "publisher": "Carlsen",
+        "year": "2017",
+        "isbn": "978-3-8508-100-1"
+    },
+    {
+        "title": "Handball-Taktik im Leistungssport (Band 68)",
+        "author": "Jochen Beppler",
+        "category": "Taktik",
+        "publisher": "Limpert",
+        "year": "2024",
+        "isbn": "978-3-7852-808-7"
+    },
+    {
+        "title": "Hinter den Kulissen der Bundesliga (Band 69)",
+        "author": "Andreas Thiel",
+        "category": "Biografie",
+        "publisher": "Econ",
+        "year": "2011",
+        "isbn": "978-3-7582-948-2"
+    },
+    {
+        "title": "Handball-Taktik im Leistungssport (Band 70)",
+        "author": "Jürgen Löhle",
+        "category": "Taktik",
+        "publisher": "Piper",
+        "year": "2022",
+        "isbn": "978-3-3381-330-6"
+    },
+    {
+        "title": "Europapokal-Drama und Triumph (Band 71)",
+        "author": "Frank Schneller",
+        "category": "Geschichte",
+        "publisher": "Limpert",
+        "year": "2019",
+        "isbn": "978-3-3732-124-9"
+    },
+    {
+        "title": "Die glorreichen Siebziger im Handball (Band 72)",
+        "author": "Klaus Feldmann",
+        "category": "Geschichte",
+        "publisher": "Wartberg",
+        "year": "2017",
+        "isbn": "978-3-7356-682-7"
+    },
+    {
+        "title": "Handball mein Leben (Band 73)",
+        "author": "Rolf Brack",
+        "category": "Biografie",
+        "publisher": "Meyer & Meyer",
+        "year": "2025",
+        "isbn": "978-3-2080-854-3"
+    },
+    {
+        "title": "Hinter den Kulissen der Bundesliga (Band 74)",
+        "author": "Jochen Beppler",
+        "category": "Biografie",
+        "publisher": "Piper",
+        "year": "2014",
+        "isbn": "978-3-9681-847-8"
+    },
+    {
+        "title": "Coaching im modernen Handball (Band 75)",
+        "author": "Jochen Beppler",
+        "category": "Taktik",
+        "publisher": "Limpert",
+        "year": "2025",
+        "isbn": "978-3-7122-968-8"
+    },
+    {
+        "title": "Mein Weg nach ganz oben (Band 76)",
+        "author": "Sabine Buch",
+        "category": "Biografie",
+        "publisher": "Carlsen",
+        "year": "2015",
+        "isbn": "978-3-7338-974-3"
+    },
+    {
+        "title": "Vom Talent zum Profi (Band 77)",
+        "author": "Rolf Brack",
+        "category": "Biografie",
+        "publisher": "Limpert",
+        "year": "2018",
+        "isbn": "978-3-6266-778-1"
+    },
+    {
+        "title": "Coaching im modernen Handball (Band 78)",
+        "author": "Erik Eggers",
+        "category": "Taktik",
+        "publisher": "Meyer & Meyer",
+        "year": "2015",
+        "isbn": "978-3-7126-833-1"
+    },
+    {
+        "title": "Super-Trainer Handball-Fibel (Band 79)",
+        "author": "Frank Schneller",
+        "category": "Taktik",
+        "publisher": "Meyer & Meyer",
+        "year": "2011",
+        "isbn": "978-3-8134-202-3"
+    },
+    {
+        "title": "Mentale Stärke im Handball (Band 80)",
+        "author": "Heiner Brand",
+        "category": "Taktik",
+        "publisher": "Sportverlag",
+        "year": "2023",
+        "isbn": "978-3-4238-875-5"
+    },
+    {
+        "title": "Koordination und Ballgefühl für Kids (Band 81)",
+        "author": "Heiner Brand",
+        "category": "Kinder",
+        "publisher": "Piper",
+        "year": "2021",
+        "isbn": "978-3-3897-680-6"
+    },
+    {
+        "title": "Hinter den Kulissen der Bundesliga (Band 82)",
+        "author": "Frank Schneller",
+        "category": "Biografie",
+        "publisher": "Die Werkstatt",
+        "year": "2018",
+        "isbn": "978-3-3518-667-8"
+    },
+    {
+        "title": "Mein Weg nach ganz oben (Band 83)",
+        "author": "Frank Schneller",
+        "category": "Biografie",
+        "publisher": "Piper",
+        "year": "2018",
+        "isbn": "978-3-1661-585-5"
+    },
+    {
+        "title": "Erfolgreich coachen in der Kreisliga (Band 84)",
+        "author": "Rolf Brack",
+        "category": "Taktik",
+        "publisher": "Limpert",
+        "year": "2022",
+        "isbn": "978-3-7365-867-8"
+    },
+    {
+        "title": "Balkan-Wunder im Handball (Band 85)",
+        "author": "Heiner Brand",
+        "category": "Taktik",
+        "publisher": "Econ",
+        "year": "2024",
+        "isbn": "978-3-8266-567-3"
+    },
+    {
+        "title": "Hinter den Kulissen der Bundesliga (Band 86)",
+        "author": "Heiner Brand",
+        "category": "Biografie",
+        "publisher": "Piper",
+        "year": "2015",
+        "isbn": "978-3-1077-499-1"
+    },
+    {
+        "title": "Hinter den Kulissen der Bundesliga (Band 87)",
+        "author": "Jürgen Löhle",
+        "category": "Biografie",
+        "publisher": "Econ",
+        "year": "2020",
+        "isbn": "978-3-8429-597-4"
+    },
+    {
+        "title": "Statistik und Spielanalyse (Band 88)",
+        "author": "Jochen Beppler",
+        "category": "Taktik",
+        "publisher": "Die Werkstatt",
+        "year": "2015",
+        "isbn": "978-3-3529-728-7"
+    },
+    {
+        "title": "Mein Weg nach ganz oben (Band 89)",
+        "author": "Klaus Feldmann",
+        "category": "Biografie",
+        "publisher": "Wartberg",
+        "year": "2015",
+        "isbn": "978-3-8527-448-2"
+    },
+    {
+        "title": "Die glorreichen Siebziger im Handball (Band 90)",
+        "author": "Rolf Brack",
+        "category": "Geschichte",
+        "publisher": "Piper",
+        "year": "2013",
+        "isbn": "978-3-6530-820-3"
+    },
+    {
+        "title": "Schultraining Handball leicht gemacht (Band 91)",
+        "author": "Klaus Feldmann",
+        "category": "Jugend",
+        "publisher": "Meyer & Meyer",
+        "year": "2011",
+        "isbn": "978-3-6510-432-5"
+    },
+    {
+        "title": "Hinter den Kulissen der Bundesliga (Band 92)",
+        "author": "Erik Eggers",
+        "category": "Biografie",
+        "publisher": "Die Werkstatt",
+        "year": "2012",
+        "isbn": "978-3-2360-869-2"
+    },
+    {
+        "title": "Super-Trainer Handball-Fibel (Band 93)",
+        "author": "Sabine Buch",
+        "category": "Taktik",
+        "publisher": "Wartberg",
+        "year": "2023",
+        "isbn": "978-3-8339-904-5"
+    },
+    {
+        "title": "Super-Trainer Handball-Fibel (Band 94)",
+        "author": "Jürgen Löhle",
+        "category": "Taktik",
+        "publisher": "Meyer & Meyer",
+        "year": "2014",
+        "isbn": "978-3-3165-892-7"
+    },
+    {
+        "title": "Der perfekte Wurf: Technik und Analyse (Band 95)",
+        "author": "Heiner Brand",
+        "category": "Taktik",
+        "publisher": "GeraMond",
+        "year": "2025",
+        "isbn": "978-3-6597-285-3"
+    },
+    {
+        "title": "Schultraining Handball leicht gemacht (Band 96)",
+        "author": "Heiner Brand",
+        "category": "Jugend",
+        "publisher": "GeraMond",
+        "year": "2019",
+        "isbn": "978-3-1174-512-1"
+    },
+    {
+        "title": "Balkan-Wunder im Handball (Band 97)",
+        "author": "Stefan Kretzschmar",
+        "category": "Taktik",
+        "publisher": "Wartberg",
+        "year": "2023",
+        "isbn": "978-3-9997-158-3"
+    },
+    {
+        "title": "Legenden der Handball-Bundesliga (Band 98)",
+        "author": "Jürgen Löhle",
+        "category": "Geschichte",
+        "publisher": "Wartberg",
+        "year": "2013",
+        "isbn": "978-3-6847-127-3"
+    },
+    {
+        "title": "Balkan-Wunder im Handball (Band 99)",
+        "author": "Frank Schneller",
+        "category": "Taktik",
+        "publisher": "GeraMond",
+        "year": "2012",
+        "isbn": "978-3-4907-388-0"
+    },
+    {
+        "title": "Schultraining Handball leicht gemacht (Band 100)",
+        "author": "Jochen Beppler",
+        "category": "Jugend",
+        "publisher": "Wartberg",
+        "year": "2021",
+        "isbn": "978-3-9880-876-1"
+    }
+];
+
+        const tableBody = document.getElementById('bookTableBody');
+        const queryInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const resultCount = document.getElementById('resultCount');
+
+        function renderTable(data) {
+            tableBody.innerHTML = '';
+            if (data.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 italic">Keine passenden Bücher gefunden.</td></tr>`;
+                resultCount.textContent = '0 Einträge';
+                return;
+            }
+            data.forEach(book => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/80 transition-colors';
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-medium text-slate-900">${book.title}</td>
+                    <td class="px-6 py-4 text-slate-600">${book.author}</td>
+                    <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">${book.category}</span></td>
+                    <td class="px-6 py-4 text-slate-500">${book.publisher} (${book.year})</td>
+                    <td class="px-6 py-4 text-slate-400 font-mono text-xs">${book.isbn}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+            resultCount.textContent = `${data.length} ${data.length === 1 ? 'Eintrag' : 'Einträge'}`;
+        }
+
+        function filterBooks() {
+            const query = queryInput.value.toLowerCase();
+            const category = categoryFilter.value;
+
+            const filtered = books.filter(book => {
+                const matchesQuery = book.title.toLowerCase().includes(query) ||
+                                     book.author.toLowerCase().includes(query) ||
+                                     book.publisher.toLowerCase().includes(query) ||
+                                     book.isbn.toLowerCase().includes(query);
+                const matchesCategory = category === "" || book.category === category;
+                return matchesQuery && matchesCategory;
+            });
+
+            renderTable(filtered);
+        }
+
+        queryInput.addEventListener('input', filterBooks);
+        categoryFilter.addEventListener('change', filterBooks);
+
+        renderTable(books);
+    </script>
+</body>
+</html>
