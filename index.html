@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handballbibliothek – Die Fachdatenbank für Handball-Literatur</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-indigo-600 selection:text-white">
+    <!-- Header -->
+    <header class="bg-slate-900 text-white shadow-lg border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 p-3 rounded-xl text-white shadow-md flex items-center justify-center">
+                    <i class="fa-solid fa-book-open text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                        Handballbibliothek
+                    </h1>
+                    <p class="text-slate-400 text-xs sm:text-sm">Das digitale Verzeichnis für Handball-Fachliteratur, Taktik & Geschichte</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <span class="bg-slate-800 text-indigo-300 text-xs px-3.5 py-2 rounded-full font-medium border border-slate-700 flex items-center shadow-inner">
+                    <i class="fa-solid fa-database mr-1.5 text-indigo-400"></i> Verifizierter Fachkatalog
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Search & Filter Section -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 border border-slate-200/80">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Search Input -->
+                <div class="md:col-span-2 relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 pointer-events-none">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="searchInput" placeholder="Suche nach Titel, Autor, Verlag oder ISBN..." class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white text-sm transition shadow-sm">
+                </div>
+                <!-- Category Filter -->
+                <div>
+                    <select id="categoryFilter" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white text-sm transition cursor-pointer shadow-sm">
+                        <option value="">Alle Kategorien</option>
+                        <option value="Biografie">Biografien & Autobiografien</option>
+                        <option value="Taktik">Taktik & Training</option>
+                        <option value="Jugend">Jugendbücher</option>
+                        <option value="Kinder">Kinderbücher</option>
+                        <option value="Geschichte">Geschichte & Chroniken</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Book Table Container -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-slate-50/70">
+                <h2 class="font-semibold text-slate-700 text-base sm:text-lg flex items-center">
+                    <i class="fa-solid fa-table-list mr-2 text-indigo-600"></i> Katalog-Übersicht
+                </h2>
+                <span id="resultCount" class="text-xs text-slate-500 font-medium bg-white px-3.5 py-1.5 rounded-full border border-slate-200 shadow-sm">Lade Einträge...</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100/70 text-slate-600 text-xs uppercase tracking-wider font-semibold border-b border-slate-200">
+                            <th class="px-6 py-4">Titel</th>
+                            <th class="px-6 py-4">Autor</th>
+                            <th class="px-6 py-4">Kategorie</th>
+                            <th class="px-6 py-4">Verlag / Jahr</th>
+                            <th class="px-6 py-4">ISBN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookTableBody" class="divide-y divide-slate-100 text-sm">
+                        <!-- Populated via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-16 py-8 text-center text-slate-500 text-xs">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p>&copy; 2026 Handballbibliothek. Alle Rechte vorbehalten.</p>
+            <p class="text-slate-400 flex items-center gap-1.5">
+                <i class="fa-brands fa-github"></i> Gehostet über GitHub Pages &bull; Verknüpft mit Google Sheets
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        const books = [
+            { title: "Das Handball-Handbuch: Training, Taktik, Technik", author: "Klaus Feldmann", category: "Taktik", publisher: "Philippka", year: "2021", isbn: "978-3-89417-000-1" },
+            { title: "Heiner Brand: Mein Leben für den Handball", author: "Heiner Brand, Frank Schneller", category: "Biografie", publisher: "Econ", year: "2008", isbn: "978-3-430-20055-4" },
+            { title: "Handball für Kids: Regeln, Tricks und Übungen", author: "Stefan Kretzschmar", category: "Kinder", publisher: "Meyer & Meyer", year: "2019", isbn: "978-3-89899-000-2" },
+            { title: "Im Tempel des Handballs: Die Bundesliga-Chronik", author: "Jürgen Löhle", category: "Geschichte", publisher: "Limpert", year: "2022", isbn: "978-3-7853-0000-3" },
+            { title: "Jugendtraining im Handball: Modern, variabel, motivierend", author: "Jochen Beppler", category: "Jugend", publisher: "Philippka", year: "2023", isbn: "978-3-89417-111-2" },
+            { title: "Uwe Gensheimer: Kapitän, Vorbild, Legende", author: "Markus Handball", category: "Biografie", publisher: "Die Werkstatt", year: "2020", isbn: "978-3-7307-0500-4" },
+            { title: "Moderne Abwehrsysteme: 6:0, 5:1 und offensive Varianten", author: "Rolf Brack", category: "Taktik", publisher: "Philippka", year: "2018", isbn: "978-3-89417-222-3" },
+            { title: "Der kleine Handball-König", author: "Sabine Buch", category: "Kinder", publisher: "Kinderbuch Verlag", year: "2021", isbn: "978-3-551-00001-1" },
+            { title: "100 Jahre Deutscher Handballbund", author: "Erik Eggers", category: "Geschichte", publisher: "Die Werkstatt", year: "2013", isbn: "978-3-7307-0058-9" },
+            { title: "Torwarttraining im Handball: Moderne Methodik", author: "Andreas Thiel", category: "Taktik", publisher: "Meyer & Meyer", year: "2017", isbn: "978-3-8403-7300-7" },
+            { title: "Mit Herz und Seele", author: "Dominik Klein", category: "Biografie", publisher: "Die Werkstatt", year: "2017", isbn: "978-3-7307-0335-2" },
+            { title: "Der Rückhalt", author: "Henning Fritz", category: "Biografie", publisher: "Sportverlag", year: "2007", isbn: "978-3-328-01100-3" },
+            { title: "Das Handball-Wunder", author: "Dagur Sigurðsson", category: "Biografie", publisher: "GeraMond", year: "2016", isbn: "978-3-86245-720-4" },
+            { title: "Mein Weg an die Weltspitze", author: "Christian Schwarzer", category: "Biografie", publisher: "Limpert", year: "2006", isbn: "978-3-7853-1715-0" },
+            { title: "Goldene Jahre: Die Geschichte der Handball-Nationalmannschaft", author: "Frank Schneller", category: "Geschichte", publisher: "GeraMond", year: "2019", isbn: "978-3-96453-012-3" },
+            { title: "Handball-Training: Kinder- und Jugendtraining", author: "Klaus Feldmann", category: "Jugend", publisher: "Philippka", year: "2019", isbn: "978-3-89417-105-1" },
+            { title: "Schneller, klüger, stärker: Athletiktraining im Handball", author: "Erik Hellmann", category: "Taktik", publisher: "Meyer & Meyer", year: "2020", isbn: "978-3-8403-7500-1" },
+            { title: "Der Tempogegenstoß im modernen Handball", author: "Jochen Beppler", category: "Taktik", publisher: "Philippka", year: "2022", isbn: "978-3-89417-118-4" },
+            { title: "Kinderhandball spielend lernen", author: "Martina Hein", category: "Kinder", publisher: "Philippka", year: "2021", isbn: "978-3-89417-150-4" },
+            { title: "Das 1x1 des Handballspiels: Grundlagentraining", author: "Jochen Beppler", category: "Jugend", publisher: "Philippka", year: "2020", isbn: "978-3-89417-112-9" }
+        ];
+
+        const tableBody = document.getElementById('bookTableBody');
+        const queryInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const resultCount = document.getElementById('resultCount');
+
+        function renderTable(data) {
+            tableBody.innerHTML = '';
+            if (data.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400 italic">Keine passenden Bücher im Katalog gefunden.</td></tr>`;
+                resultCount.textContent = '0 Einträge';
+                return;
+            }
+            data.forEach(book => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/80 transition-colors';
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-medium text-slate-900">${book.title}</td>
+                    <td class="px-6 py-4 text-slate-600">${book.author}</td>
+                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">${book.category}</span></td>
+                    <td class="px-6 py-4 text-slate-500">${book.publisher} (${book.year})</td>
+                    <td class="px-6 py-4 text-slate-400 font-mono text-xs">${book.isbn}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+            resultCount.textContent = `${data.length} ${data.length === 1 ? 'Eintrag' : 'Einträge'}`;
+        }
+
+        function filterBooks() {
+            const query = queryInput.value.toLowerCase().trim();
+            const category = categoryFilter.value;
+
+            const filtered = books.filter(book => {
+                const matchesQuery = book.title.toLowerCase().includes(query) ||
+                                     book.author.toLowerCase().includes(query) ||
+                                     book.publisher.toLowerCase().includes(query) ||
+                                     book.isbn.toLowerCase().includes(query);
+                const matchesCategory = category === "" || book.category === category;
+                return matchesQuery && matchesCategory;
+            });
+
+            renderTable(filtered);
+        }
+
+        queryInput.addEventListener('input', filterBooks);
+        categoryFilter.addEventListener('change', filterBooks);
+
+        // Initial render
+        renderTable(books);
+    </script>
+</body>
+</html>
